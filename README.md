@@ -10,4 +10,4 @@ Release Notes
 
 ### 3.0.0
 
- - [x] Moved from [@mecha-cms/mecha](https://github.com/mecha-cms/mecha).
+ - Moved from [./mecha-cms/mecha](https://github.com/mecha-cms/mecha).
