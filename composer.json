@@ -3,7 +3,6 @@
   "license": "GPL-3.0-or-later",
   "name": "mecha-cms/x.markdown",
   "require": {
-    "mecha-cms/mecha": "*",
-    "mecha-cms/x.page": "*"
+    "mecha-cms/x.page": "^2.0.0"
   }
 }
