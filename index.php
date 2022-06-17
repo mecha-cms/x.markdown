@@ -6,11 +6,11 @@ namespace x {
         if ('Markdown' !== $type && 'text/markdown' !== $type) {
             return $content;
         }
-        $parser = new \ParsedownExtraPlugin;
+        $out = new \ParsedownExtraPlugin;
         foreach (\State::get('x.markdown', true) ?? [] as $k => $v) {
-            $parser->{$k} = $v;
+            $out->{$k} = $v;
         }
-        return $parser->text($content ?? "");
+        return "" !== ($out = $out->text($content ?? "")) ? $out : null;
     }
     \Hook::set([
         'page.content'
@@ -23,14 +23,14 @@ namespace x\markdown {
         if ('Markdown' !== $type && 'text/markdown' !== $type) {
             return $content;
         }
-        $parser = new \ParsedownExtraPlugin;
+        $out = new \ParsedownExtraPlugin;
         foreach (\State::get('x.markdown', true) ?? [] as $k => $v) {
             if (0 === \strpos($k, 'block')) {
                 continue;
             }
-            $parser->{$k} = $v;
+            $out->{$k} = $v;
         }
-        return $parser->line($content ?? "");
+        return "" !== ($out = $out->line($content ?? "")) ? $out : null;
     }
     \Hook::set([
         'page.description',
