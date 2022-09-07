@@ -524,7 +524,7 @@ class ParsedownExtraPlugin extends ParsedownExtra {
             '.' => ' .'
         ));
         if (strpos($attributeString, '="') !== false || strpos($attributeString, "='") !== false) {
-            $attributeString = preg_replace_callback('#([-\w]+=)(["\'])([^\n]*?)\2#', function($matches) {
+            $attributeString = preg_replace_callback('#([-\w]+=)(["\'])([^\n]*?)\2#', function ($matches) {
                 $value = strtr($matches[3], array(
                     ' #' => '#',
                     ' .' => '.',

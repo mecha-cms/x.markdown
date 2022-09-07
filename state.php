@@ -35,17 +35,17 @@ return [
         'class' => null,
         'role' => 'doc-endnotes'
     ],
-    'footnoteLinkAttributes' => function($number, $attributes, &$element, $name) {
+    'footnoteLinkAttributes' => function ($number, $attributes, &$element, $name) {
         return [
             'class' => null,
             'href' => '#to:' . $name,
             'role' => 'doc-noteref'
         ];
     },
-    'footnoteReferenceAttributes' => function($number, $attributes, &$element, $name, $index) {
+    'footnoteReferenceAttributes' => function ($number, $attributes, &$element, $name, $index) {
         return ['id' => 'from:' . $name . '.' . $index];
     },
-    'footnoteBackLinkAttributes' => function($number, $attributes, &$element, $name, $index) {
+    'footnoteBackLinkAttributes' => function ($number, $attributes, &$element, $name, $index) {
         return [
             'class' => null,
             'href' => '#from:' . $name . '.' . $index,
@@ -53,13 +53,13 @@ return [
             'role' => 'doc-backlink'
         ];
     },
-    'footnoteBackReferenceAttributes' => function($number, $attributes, &$element, $name, $total) {
+    'footnoteBackReferenceAttributes' => function ($number, $attributes, &$element, $name, $total) {
         return [
             'id' => 'to:' . $name,
             'role' => 'doc-endnote'
         ];
     },
-    'linkAttributes' => function($html, $attributes, &$element, $internal) {
+    'linkAttributes' => function ($html, $attributes, &$element, $internal) {
         return $internal ? [] : [
             'rel' => 'nofollow',
             'target' => '_blank'
