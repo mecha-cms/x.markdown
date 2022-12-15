@@ -1,8 +1,8 @@
 {
-  "description": "Convert Markdown syntax to HTML.",
+  "description": "Converts Markdown syntax to HTML.",
   "license": "GPL-3.0-or-later",
   "name": "mecha-cms/x.markdown",
   "require": {
-    "mecha-cms/x.page": "^2.0.0"
+    "mecha-cms/x.page": "^3.0.0"
   }
 }
