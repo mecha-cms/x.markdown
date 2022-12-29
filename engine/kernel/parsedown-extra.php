@@ -17,7 +17,7 @@ class ParsedownExtra extends Parsedown
 {
     # ~
 
-    const version = '0.8.0';
+    const version = '0.8.0'; // Modified
 
     # ~
 
@@ -624,8 +624,11 @@ class ParsedownExtra extends Parsedown
 
         $DOMDocument = new DOMDocument;
 
-        # http://stackoverflow.com/q/11309194/200145
-        $elementMarkup = mb_convert_encoding($elementMarkup, 'HTML-ENTITIES', 'UTF-8');
+        // # http://stackoverflow.com/q/11309194/200145
+        // $elementMarkup = mb_convert_encoding($elementMarkup, 'HTML-ENTITIES', 'UTF-8');
+        // # Added this tweak to remove PHP 8.2 deprecation warning when using the above method.
+        // # This markdown parser library is stable enough that I do not have any plan to switch to other libraries
+        $elementMarkup = htmlentities($elementMarkup, ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
         # http://stackoverflow.com/q/4879946/200145
         $DOMDocument->loadHTML($elementMarkup);
