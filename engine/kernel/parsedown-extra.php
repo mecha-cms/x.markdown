@@ -627,9 +627,9 @@ class ParsedownExtra extends Parsedown
         # https://www.php.net/manual/en/domdocument.loadhtml.php#95251
         $DOMDocument->loadHTML('<?xml encoding="UTF-8"?>' . $elementMarkup);
         $DOMDocument->removeChild($DOMDocument->doctype);
-        foreach ($DOMDocument->childNodes as $node) {
-            if ($node->nodeType === XML_PI_NODE) {
-                $DOMDocument->removeChild($node);
+        foreach ($DOMDocument->childNodes as $Node) {
+            if ($Node->nodeType === XML_PI_NODE) {
+                $DOMDocument->removeChild($Node);
             }
         }
         $DOMDocument->encoding = 'UTF-8';
