@@ -624,10 +624,15 @@ class ParsedownExtra extends Parsedown
 
         $DOMDocument = new DOMDocument;
 
-        # https://stackoverflow.com/a/8218649/1163000
-        $DOMDocument->loadHTML('<?xml encoding="utf-8" ?>' . $elementMarkup);
+        # https://www.php.net/manual/en/domdocument.loadhtml.php#95251
+        $DOMDocument->loadHTML('<?xml encoding="UTF-8"?>' . $elementMarkup);
         $DOMDocument->removeChild($DOMDocument->doctype);
-        $DOMDocument->removeChild($DOMDocument->firstChild); // remove the <?xml encoding... part
+        foreach ($DOMDocument->childNodes as $node) {
+            if ($node->nodeType === XML_PI_NODE) {
+                $DOMDocument->removeChild($node);
+            }
+        }
+        $DOMDocument->encoding = 'UTF-8';
         $DOMDocument->replaceChild($DOMDocument->firstChild->firstChild->firstChild, $DOMDocument->firstChild);
 
         $elementText = '';
