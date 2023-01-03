@@ -624,16 +624,10 @@ class ParsedownExtra extends Parsedown
 
         $DOMDocument = new DOMDocument;
 
-        // # http://stackoverflow.com/q/11309194/200145
-        // $elementMarkup = mb_convert_encoding($elementMarkup, 'HTML-ENTITIES', 'UTF-8');
-        # Added this tweak to remove PHP 8.2 deprecation warning when using the above method.
-        # https://php.watch/versions/8.2/mbstring-qprint-base64-uuencode-html-entities-deprecated#html
-        # This markdown parser library is stable enough that I do not have any plan to switch to other libraries
-        $elementMarkup = htmlentities($elementMarkup);
-
-        # http://stackoverflow.com/q/4879946/200145
-        $DOMDocument->loadHTML($elementMarkup);
+        # https://stackoverflow.com/a/8218649/1163000
+        $DOMDocument->loadHTML('<?xml encoding="utf-8" ?>' . $elementMarkup);
         $DOMDocument->removeChild($DOMDocument->doctype);
+        $DOMDocument->removeChild($DOMDocument->firstChild); // remove the <?xml encoding... part
         $DOMDocument->replaceChild($DOMDocument->firstChild->firstChild->firstChild, $DOMDocument->firstChild);
 
         $elementText = '';
