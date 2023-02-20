@@ -55,8 +55,7 @@ return [
     },
     'footnoteBackReferenceAttributes' => function ($number, $attributes, &$element, $name, $total) {
         return [
-            'id' => 'to:' . $name,
-            'role' => 'doc-endnote'
+            'id' => 'to:' . $name
         ];
     },
     'linkAttributes' => function ($html, $attributes, &$element, $internal) {
