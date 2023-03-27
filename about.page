@@ -6,9 +6,6 @@ color: '#0f709d'
 author: Taufik Nurrohman
 type: Markdown
 version: 3.0.2
-
-use:
-  '.\lot\x\page': 1
 ...
 
 Markdown is two things: a plain text markup syntax, and a software tool that converts plain text markup to HTML for
