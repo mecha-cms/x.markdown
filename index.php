@@ -1,7 +1,7 @@
 <?php
 
-namespace x {
-    function markdown($content) {
+namespace x\markdown\page {
+    function content($content) {
         $type = $this->type;
         if ('Markdown' !== $type && 'text/markdown' !== $type) {
             return $content;
@@ -12,16 +12,13 @@ namespace x {
         }
         return "" !== ($out = $out->text($content ?? "")) ? $out : null;
     }
-    \Hook::set([
-        'page.content'
-    ], __NAMESPACE__ . "\\markdown", 2);
-}
-
-namespace x\markdown {
-    function span($content) { // Inline tag(s) only
+    function description($description) {
+        return \fire(__NAMESPACE__ . "\\title", [$description], $this);
+    }
+    function title($title) {
         $type = $this->type;
         if ('Markdown' !== $type && 'text/markdown' !== $type) {
-            return $content;
+            return $title;
         }
         $out = new \ParsedownExtraPlugin;
         foreach (\State::get('x.markdown', true) ?? [] as $k => $v) {
@@ -30,10 +27,10 @@ namespace x\markdown {
             }
             $out->{$k} = $v;
         }
-        return "" !== ($out = $out->line($content ?? "")) ? $out : null;
+        return "" !== ($out = $out->line($title ?? "")) ? $out : null;
     }
-    \Hook::set([
-        'page.description',
-        'page.title'
-    ], __NAMESPACE__ . "\\span", 2);
+    \Hook::set('page.content', __NAMESPACE__ . "\\content", 2);
+    // Inline tag(s) only
+    \Hook::set('page.description', __NAMESPACE__ . "\\description", 2);
+    \Hook::set('page.title', __NAMESPACE__ . "\\title", 2);
 }
