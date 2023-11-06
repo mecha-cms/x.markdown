@@ -5,11 +5,7 @@ function page__content($content) {
     if ('Markdown' !== $type && 'text/markdown' !== $type) {
         return $content;
     }
-    $out = new \ParsedownExtraPlugin;
-    foreach (\State::get('x.markdown', true) ?? [] as $k => $v) {
-        $out->{$k} = $v;
-    }
-    return "" !== ($out = $out->text($content ?? "")) ? $out : null;
+    return from($content);
 }
 
 function page__description($description) {
@@ -21,14 +17,7 @@ function page__title($title) {
     if ('Markdown' !== $type && 'text/markdown' !== $type) {
         return $title;
     }
-    $out = new \ParsedownExtraPlugin;
-    foreach (\State::get('x.markdown', true) ?? [] as $k => $v) {
-        if (0 === \strpos($k, 'block')) {
-            continue;
-        }
-        $out->{$k} = $v;
-    }
-    return "" !== ($out = $out->line($title ?? "")) ? $out : null;
+    return from($title, false);
 }
 
 \Hook::set('page.content', __NAMESPACE__ . "\\page__content", 2);
