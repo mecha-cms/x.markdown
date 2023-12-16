@@ -5,7 +5,8 @@ function page__content($content) {
     if ('Markdown' !== $type && 'text/markdown' !== $type) {
         return $content;
     }
-    return from($content);
+    $content = \strtr(from($content) ?? "", [' />' => '>']);
+    return "" !== $content ? $content : null;
 }
 
 function page__description($description) {
@@ -17,7 +18,8 @@ function page__title($title) {
     if ('Markdown' !== $type && 'text/markdown' !== $type) {
         return $title;
     }
-    return from($title, false);
+    $title = \strtr(from($title, false), [' />' => '>']);
+    return "" !== $title ? $title : null;
 }
 
 \Hook::set('page.content', __NAMESPACE__ . "\\page__content", 2);

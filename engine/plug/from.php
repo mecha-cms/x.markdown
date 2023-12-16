@@ -456,13 +456,13 @@ namespace x\markdown\from {
         $a = \preg_quote($char[0], '/');
         $b = \preg_quote($char[1] ?? $char[0], '/');
         $c = $a . ($b === $a ? "" : $b);
-        return '(?>' . $a . ($capture ? '(' : "") . '(?>' . ($before ? $before . '|' : "") . '[^' . $c . $x . '\\\\]|\\\\.)*' . ($capture ? ')' : "") . $b . ')';
+        return '(?>' . $a . ($capture ? '(' : "") . '(?>' . ($before ? $before . '|' : "") . '[^' . $c . $x . '\\\\]|\\\\.)*+' . ($capture ? ')' : "") . $b . ')';
     }
     function r(string $char = '[]', $capture = false, string $before = "", string $x = ""): string {
         $a = \preg_quote($char[0], '/');
         $b = \preg_quote($char[1] ?? $char[0], '/');
         $c = $a . ($b === $a ? "" : $b);
-        return '(?>' . $a . ($capture ? '(' : "") . '(?>' . ($before ? $before . '|' : "") . '[^' . $c . $x . '\\\\]|\\\\.|(?R))*' . ($capture ? ')' : "") . $b . ')';
+        return '(?>' . $a . ($capture ? '(' : "") . '(?>' . ($before ? $before . '|' : "") . '[^' . $c . $x . '\\\\]|\\\\.|(?R))*+' . ($capture ? ')' : "") . $b . ')';
     }
     function raw(?string $value, $block = true): array {
         return $block ? rows($value) : row($value);
@@ -772,7 +772,7 @@ namespace x\markdown\from {
                         }
                     }
                     if (false !== $key) {
-                        $data = $lot[0][$key][2] ?? [];
+                        $data = \array_replace($lot[0][$key][2] ?? [], $data ?? []);
                         $link = $lot[0][$key][0] ?? null;
                         $title = $lot[0][$key][1] ?? null;
                     }
@@ -1401,7 +1401,7 @@ namespace x\markdown\from {
             if ('figure' === $v[0]) {
                 $row = row(\trim($v[1], "\n"), $lot)[0];
                 // The image syntax doesn’t seem to appear alone on a single line
-                if (\count($row) > 1) {
+                if (\is_array($row) && \count($row) > 1) {
                     if (!empty($v[4])) {
                         [$a, $b] = \explode("\n\n", $v[4] . "\n\n", 2);
                         $v = [false, \array_merge([['p', row(\trim($v[1] . "\n" . $a, "\n"), $lot)[0], [], 0]], rows(\trim($b, "\n"), $lot)[0]), [], $v[3]];
@@ -1773,23 +1773,32 @@ namespace x\markdown\from {
         }
         return "" !== $out ? $out : null;
     }
+    // <https://stackoverflow.com/a/6059053/1163000>
     function u(?string $v): string {
-        \preg_match('/^([^?#]*)?([?][^#]*)?([#].*)?$/', d($v), $m);
-        return \strtr(\rawurlencode($m[1]), [
-            '%25' => '%',
+        return \strtr(\rawurlencode(d($v)), [
+            '%21' => '!',
+            '%23' => '#',
+            '%24' => '$',
+            '%26' => '&',
+            '%27' => "'",
+            '%28' => '(',
+            '%29' => ')',
+            '%2A' => '*',
             '%2B' => '+',
             '%2C' => ',',
+            '%2D' => '-',
+            '%2E' => '.',
             '%2F' => '/',
             '%3A' => ':',
             '%3B' => ';',
-            '%40' => '@'
-        ]) . (isset($m[2]) && "" !== $m[2] && '?' !== $m[2] ? '?' . \strtr(\rawurlencode(\substr($m[2], 1)), [
-            '%25' => '%',
-            '%26' => '&',
-            '%3D' => '='
-        ]) : "") . (isset($m[3]) && "" !== $m[3] && '#' !== $m[3] ? '#' . \strtr(\rawurlencode(\substr($m[3], 1)), [
-            '%25' => '%'
-        ]) : "");
+            '%3D' => '=',
+            '%3F' => '?',
+            '%40' => '@',
+            '%5B' => '[',
+            '%5D' => ']',
+            '%5F' => '_',
+            '%7E' => '~'
+        ]);
     }
     // <https://spec.commonmark.org/0.30#example-12>
     function v(?string $value): string {
