@@ -18,7 +18,7 @@ function page__title($title) {
     if ('Markdown' !== $type && 'text/markdown' !== $type) {
         return $title;
     }
-    $title = \strtr(from($title, false), [' />' => '>']);
+    $title = \strtr(from($title, false) ?? "", [' />' => '>']);
     return "" !== $title ? $title : null;
 }
 
