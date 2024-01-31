@@ -333,6 +333,9 @@ namespace x\markdown\from {
         }
         // `[…`
         if (0 === \strpos($row, '[')) {
+            if (1 === \strpos($row, '^')) {
+                return [2, $row, [], $dent];
+            }
             if (
                 // `[asdf](…`
                 \strpos($row, '](') > 0 ||
@@ -342,9 +345,6 @@ namespace x\markdown\from {
                 false !== ($n = \strpos($row, ']')) && ':' !== \substr($row, $n + 1, 1)
             ) {
                 return ['p', $row, [], $dent];
-            }
-            if (1 === \strpos($row, '^')) {
-                return [2, $row, [], $dent];
             }
             return [0, $row, [], $dent];
         }
