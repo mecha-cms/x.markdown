@@ -684,7 +684,7 @@ namespace x\markdown\from {
                     }
                     $value = $chop = \substr($chop, \strlen($prev));
                     // `[^asdf]`
-                    if (0 === \strpos($m[1][0], '^')) {
+                    if (0 === \strpos($m[1][0], '^') && ("" === $chop || false === \strpos('([', $chop[0]))) {
                         if (!isset($lot[2][$key = \trim(\substr($m[1][0], 1))])) {
                             $chops[] = e($prev);
                             continue;
