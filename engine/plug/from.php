@@ -24,9 +24,10 @@ namespace x\markdown {
         foreach ($rows as &$row) {
             $row = \is_array($row) ? from\s($row) : $row;
         }
-        $value = \implode("", $rows);
-        $value = \strtr($value, ['</dl><dl>' => ""]);
-        return $value;
+        if ("" === ($value = \implode("", $rows))) {
+            return null;
+        }
+        return \strtr($value, ['</dl><dl>' => ""]);
     }
     \From::_('markdown', __NAMESPACE__ . "\\from");
 }
@@ -304,7 +305,7 @@ namespace x\markdown\from {
                     return [false, $row, [], $dent, $t];
                 }
                 // <https://spec.commonmark.org/0.30#html-blocks>
-                if (false !== \strpos(',address,article,aside,base,basefont,blockquote,body,caption,center,col,colgroup,dd,details,dialog,dir,div,dl,dt,fieldset,figcaption,figure,footer,form,frame,frameset,h1,h2,h3,h4,h5,h6,head,header,hr,html,iframe,legend,li,link,main,menu,menuitem,nav,noframes,ol,optgroup,option,p,pre,param,script,section,source,style,summary,table,tbody,td,textarea,tfoot,th,thead,title,tr,track,ul,', ',' . \trim($t, '/') . ',')) {
+                if (false !== \strpos(',address,article,aside,base,basefont,blockquote,body,caption,center,col,colgroup,dd,details,dialog,dir,div,dl,dt,fieldset,figcaption,figure,footer,form,frame,frameset,h1,h2,h3,h4,h5,h6,head,header,hr,html,iframe,legend,li,link,main,menu,menuitem,nav,noframes,ol,optgroup,option,p,pre,param,script,search,section,source,style,summary,table,tbody,td,textarea,tfoot,th,thead,title,tr,track,ul,', ',' . \trim($t, '/') . ',')) {
                     return [false, $row, [], $dent, $t];
                 }
                 // <https://spec.commonmark.org/0.30#example-163>
@@ -549,17 +550,18 @@ namespace x\markdown\from {
             // <https://spec.commonmark.org/0.30#emphasis-and-strong-emphasis>
             if (\strlen($chop) > 2 && false !== \strpos('*_', $c = $chop[0])) {
                 $contains = '`[^`]+`|[^' . $c . ($is_table ? '|' : "") . '\\\\]|\\\\.';
+                $x = '\p{P}\p{S}';
                 if ('*' === $c) {
                     // Inner strong and emphasis
-                    $b0 = '(?>[*]{2}(?![\p{P}\s])|(?<=[\p{P}\s])[*]{2}(?=[\p{P}]))(?>' . $contains . ')+?(?>(?<![\p{P}\s])[*]{2}|(?<=[\p{P}])[*]{2}(?=[\p{P}\s]))';
-                    $i0 = '(?>[*](?![\p{P}\s])|(?<=[\p{P}\s])[*](?=[\p{P}]))(?>' . $contains . ')+?(?>(?<![\p{P}\s])[*]|(?<=[\p{P}])[*](?=[\p{P}\s]))';
+                    $b0 = '(?>[*]{2}(?![' . $x . '\s])|(?<=[' . $x . '\s])[*]{2}(?=[' . $x . ']))(?>' . $contains . ')+(?>(?<![' . $x . '\s])[*]{2}|(?<=[' . $x . '])[*]{2}(?=[' . $x . '\s]))';
+                    $i0 = '(?>[*](?![' . $x . '\s])|(?<=[' . $x . '\s])[*](?=[' . $x . ']))(?>' . $contains . ')+(?>(?<![' . $x . '\s])[*]|(?<=[' . $x . '])[*](?=[' . $x . '\s]))';
                     // Outer strong and emphasis (strict)
-                    $b1 = '(?>[*]{2}(?![\p{P}\s])|(?<=^|[\p{P}\s])[*]{2}(?=[\p{P}]))(?>' . $contains . '|' . $b0 . '|' . $i0 . '|(?R))+(?>(?<![\p{P}\s])[*]{2}(?![*])|(?<=[\p{P}])[*]{2}(?![*])(?=[\p{P}\s]|$))';
-                    $i1 = '(?>[*](?![\p{P}\s])|(?<=^|[\p{P}\s])[*](?=[\p{P}]))(?>' . $contains . '|' . $b0 . '|' . $i0 . '|(?R))+(?>(?<![\p{P}\s])[*](?![*])|(?<=[\p{P}])[*](?![*])(?=[\p{P}\s]|$))';
+                    $b1 = '(?>[*]{2}(?![' . $x . '\s])|(?<=^|[' . $x . '\s])[*]{2}(?=[' . $x . ']))(?>' . $contains . '|' . $b0 . '|' . $i0 . '|(?R))+(?>(?<![' . $x . '\s])[*]{2}(?![*])|(?<=[' . $x . '])[*]{2}(?![*])(?=[' . $x . '\s]|$))';
+                    $i1 = '(?>[*](?![' . $x . '\s])|(?<=^|[' . $x . '\s])[*](?=[' . $x . ']))(?>' . $contains . '|' . $b0 . '|' . $i0 . '|(?R))+(?>(?<![' . $x . '\s])[*](?![*])|(?<=[' . $x . '])[*](?![*])(?=[' . $x . '\s]|$))';
                 } else {
                     // Outer strong and emphasis (strict)
-                    $b1 = '(?<=^|[\p{P}\s])[_]{2}(?!\s)(?>' . $contains . '|(?<![\p{P}\s])[_]+(?![\p{P}\s])|(?R))+(?<!\s)[_]{2}(?![_])(?=[\p{P}\s]|$)';
-                    $i1 = '(?<=^|[\p{P}\s])[_](?!\s)(?>' . $contains . '|(?<![\p{P}\s])[_]+(?![\p{P}\s])|(?R))+(?<!\s)[_](?![_])(?=[\p{P}\s]|$)';
+                    $b1 = '(?<=^|[' . $x . '\s])[_]{2}(?!\s)(?>' . $contains . '|(?<![' . $x . '\s])[_]+(?![' . $x . '\s])|(?R))+(?<!\s)[_]{2}(?![_])(?=[' . $x . '\s]|$)';
+                    $i1 = '(?<=^|[' . $x . '\s])[_](?!\s)(?>' . $contains . '|(?<![' . $x . '\s])[_]+(?![' . $x . '\s])|(?R))+(?<!\s)[_](?![_])(?=[' . $x . '\s]|$)';
                 }
                 $before = \substr($prev, -1);
                 if (\preg_match('/(?>' . $b1 . '|' . $i1 . ')/u', $before . $chop, $m, \PREG_OFFSET_CAPTURE)) {
@@ -589,17 +591,11 @@ namespace x\markdown\from {
                 continue;
             }
             if (0 === \strpos($chop, '<')) {
+                // <https://spec.commonmark.org/0.31.2#html-comment>
                 if (0 === \strpos($chop, '<!--') && false !== ($n = \strpos($chop, '-->'))) {
-                    $v = \substr($chop, 0, $n + 3);
-                    // <https://spec.commonmark.org/0.30#example-625>
-                    // <https://spec.commonmark.org/0.30#example-626>
-                    if ($n < 4 || false !== \strpos(\substr($v, 4, -3), '--') || ('-' === \substr($v, -4, 1) && '<!---->' !== $v)) {
-                        $chops[] = e($prev = '<');
-                        $value = $chop = \substr($chop, 1);
-                        continue;
-                    }
+                    $prev = $v = \substr($chop, 0, $n + 3);
                     $chops[] = [false, \strtr($v, "\n", ' '), [], -1, '!--'];
-                    $value = $chop = \substr($chop, \strlen($prev = $v));
+                    $value = $chop = \substr($chop, \strlen($prev));
                     continue;
                 }
                 if (0 === \strpos($chop, '<![CDATA[') && ($n = \strpos($chop, ']]>')) > 8) {
@@ -852,7 +848,7 @@ namespace x\markdown\from {
         }
         return [m($chops), $lot];
     }
-    function rows(?string $value, array &$lot = []): array {
+    function rows(?string $value, array &$lot = [], int $level = 1): array {
         // List of reference(s), abbreviation(s), and note(s)
         $lot = \array_replace([[], [], []], $lot);
         if ("" === \trim($value ?? "")) {
@@ -873,44 +869,19 @@ namespace x\markdown\from {
                 $row = $before . \str_repeat(' ', 4 - $v % 4) . \substr($row, $v + 1);
             }
             $current = data($row); // `[$type, $row, $data, $dent, …]`
-            // If a block is available in the index `$block`, it indicates that we have a previous block.
+            // If a block is available in the index `$block`, it indicates that we have a previous block
             if ($prev = $blocks[$block] ?? 0) {
                 // Raw HTML
                 if (false === $prev[0]) {
                     if ('!--' === $prev[4]) {
-                        if (false !== \strpos(\substr($prev[1], 4), '--')) {
-                            [$a, $b] = \explode("\n", $prev[1] . "\n", 2);
-                            $blocks[$block] = ['p', $a, [], $prev[3]];
-                            if ("" !== $b && \is_array($b = rows($b, $lot)[0])) {
-                                foreach ($b as $bb) {
-                                    $blocks[++$block] = $bb;
-                                }
-                            }
-                            continue;
-                        }
-                        if (false !== ($n = \strpos($prev[1], '-->'))) {
-                            if ($n < 4) {
-                                $blocks[$block++] = ['p', $prev[1], [], $prev[3]];
-                                continue;
-                            }
+                        if (false !== \strpos($prev[1], '-->')) {
                             if (null === $current[0]) {
                                 continue;
                             }
                             $blocks[++$block] = $current;
                             continue;
                         }
-                        if (false !== ($n = \strpos($row, '-->'))) {
-                            if ('-' === \substr($row, $n - 1, 1)) {
-                                [$a, $b] = \explode("\n", $prev[1] . "\n", 2);
-                                $blocks[$block] = ['p', $a, [], $prev[3]];
-                                if ("" !== $b && \is_array($b = rows($b, $lot)[0])) {
-                                    foreach ($b as $bb) {
-                                        $blocks[++$block] = $bb;
-                                    }
-                                }
-                                $blocks[++$block] = ['p', e($row), [], $current[3]];
-                                continue;
-                            }
+                        if (false !== \strpos($row, '-->')) {
                             $blocks[$block++][1] .= "\n" . $row;
                             continue;
                         }
@@ -1316,7 +1287,7 @@ namespace x\markdown\from {
                     ]), "\n");
                     // Queue the note data to be used later
                     $lot_of_note = [$lot[0], $lot[1]];
-                    $lot[$v[0]][$key] = rows($note, $lot_of_note)[0];
+                    $lot[$v[0]][$key] = rows($note, $lot_of_note, $level + 1)[0];
                     continue;
                 }
                 $data = $key = $link = $title = null;
@@ -1396,7 +1367,7 @@ namespace x\markdown\from {
             if ('blockquote' === $v[0]) {
                 $v[1] = \substr(\strtr($v[1], ["\n>" => "\n"]), 1);
                 $v[1] = \substr(\strtr("\n" . $v[1], ["\n " => "\n"]), 1); // Remove space
-                $v[1] = rows($v[1], $lot)[0];
+                $v[1] = rows($v[1], $lot, $level + 1)[0];
                 continue;
             }
             if ('figure' === $v[0]) {
@@ -1405,7 +1376,7 @@ namespace x\markdown\from {
                 if (\is_array($row) && \count($row) > 1) {
                     if (!empty($v[4])) {
                         [$a, $b] = \explode("\n\n", $v[4] . "\n\n", 2);
-                        $v = [false, \array_merge([['p', row(\trim($v[1] . "\n" . $a, "\n"), $lot)[0], [], 0]], rows(\trim($b, "\n"), $lot)[0]), [], $v[3]];
+                        $v = [false, \array_merge([['p', row(\trim($v[1] . "\n" . $a, "\n"), $lot)[0], [], 0]], rows(\trim($b, "\n"), $lot, $level + 1)[0]), [], $v[3]];
                         continue;
                     }
                     $v = ['p', $row, [], $v[3]];
@@ -1413,7 +1384,7 @@ namespace x\markdown\from {
                 }
                 if (!empty($v[4])) {
                     $b = \rtrim($v[4], "\n");
-                    $caption = rows($b, $lot)[0];
+                    $caption = rows($b, $lot, $level + 1)[0];
                     if (0 !== \strpos($b, "\n") && false === \strpos($b, "\n\n") && \is_array($test = \reset($caption)) && 'p' === $test[0]) {
                         $caption = $test[1];
                     }
@@ -1456,7 +1427,7 @@ namespace x\markdown\from {
                 $list_is_tight = false === \strpos($v[1], "\n\n");
                 foreach ($list as &$vv) {
                     $vv = \substr(\strtr($vv, ["\n" . \str_repeat(' ', $v[4][0]) => "\n"]), $v[4][0]); // Remove indent(s)
-                    $vv = rows($vv, $lot)[0];
+                    $vv = rows($vv, $lot, $level + 1)[0];
                     if ($list_is_tight && \is_array($vv)) {
                         foreach ($vv as &$vvv) {
                             if (\is_array($vvv) && 'p' === $vvv[0]) {
@@ -1618,7 +1589,7 @@ namespace x\markdown\from {
                 }
                 if (!empty($v[4])) {
                     $b = \rtrim($v[4], "\n");
-                    $caption = rows($b, $lot)[0];
+                    $caption = rows($b, $lot, $level + 1)[0];
                     if (0 !== \strpos($b, "\n") && false === \strpos($b, "\n\n") && \is_array($test = \reset($caption)) && 'p' === $test[0]) {
                         $caption = $test[1];
                     }
@@ -1632,7 +1603,7 @@ namespace x\markdown\from {
                 $list_is_tight = false === \strpos($v[1], "\n\n");
                 foreach ($list as &$vv) {
                     $vv = \substr(\strtr($vv, ["\n" . \str_repeat(' ', $v[4][0]) => "\n"]), $v[4][0]); // Remove indent(s)
-                    $vv = rows($vv, $lot)[0];
+                    $vv = rows($vv, $lot, $level + 1)[0];
                     if ($list_is_tight && \is_array($vv)) {
                         foreach ($vv as &$vvv) {
                             if (\is_array($vvv) && 'p' === $vvv[0]) {
@@ -1661,7 +1632,7 @@ namespace x\markdown\from {
                     if (\strlen($vv) > 2 && ':' === $vv[0] && false !== \strpos(" \t", $vv[1])) {
                         $vv = rows(\substr(\strtr($vv, [
                             "\n  " => "\n"
-                        ]), 2), $lot)[0];
+                        ]), 2), $lot, $level + 1)[0];
                         if ($list_is_tight && \is_array($vv)) {
                             foreach ($vv as &$vvv) {
                                 if (\is_array($vvv) && 'p' === $vvv[0]) {
@@ -1682,7 +1653,7 @@ namespace x\markdown\from {
         }
         unset($v);
         $blocks = \array_values($blocks);
-        if (!empty($lot[2])) {
+        if (!empty($lot[2]) && 1 === $level) {
             $notes = ['div', [
                 ['hr', false, [], 0, '-'],
                 ['ol', [], [], 0, [0, 1, '.']]
