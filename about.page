@@ -6,7 +6,7 @@ color: '#0f709d'
 link: 'https://github.com/taufik-nurrohman/markdown'
 author: Taufik Nurrohman
 type: Markdown
-version: 3.1.1
+version: 3.1.2
 ...
 
 Markdown is two things: a plain text markup syntax, and a software tool that converts plain text markup to HTML for

@@ -5,7 +5,7 @@ function page__content($content) {
     if ('Markdown' !== $type && 'text/markdown' !== $type) {
         return $content;
     }
-    $content = \strtr(from($content) ?? "", [' />' => '>']);
+    $content = \strtr(\From::markdown($content) ?? "", [' />' => '>']);
     return "" !== $content ? $content : null;
 }
 
@@ -18,7 +18,7 @@ function page__title($title) {
     if ('Markdown' !== $type && 'text/markdown' !== $type) {
         return $title;
     }
-    $title = \strtr(from($title, false) ?? "", [' />' => '>']);
+    $title = \strtr(\From::markdown($title, false) ?? "", [' />' => '>']);
     return "" !== $title ? $title : null;
 }
 
