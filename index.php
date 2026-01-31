@@ -1,7 +1,11 @@
 <?php namespace x\markdown;
 
 function page__content($content) {
-    $type = $this->type;
+    if (false !== \strpos(',markdown,md,mkd,', ',' . ($this->_x() ?: P) . ',')) {
+        $content = \strtr(\From::markdown($content) ?? "", [' />' => '>']);
+        return "" !== $content ? $content : null;
+    }
+    $type = $this->type();
     if ('Markdown' !== $type && 'text/markdown' !== $type) {
         return $content;
     }
@@ -14,7 +18,11 @@ function page__description($description) {
 }
 
 function page__title($title) {
-    $type = $this->type;
+    if (false !== \strpos(',markdown,md,mkd,', ',' . ($this->_x() ?: P) . ',')) {
+        $title = \strtr(\From::markdown($title, false) ?? "", [' />' => '>']);
+        return "" !== $title ? $title : null;
+    }
+    $type = $this->type();
     if ('Markdown' !== $type && 'text/markdown' !== $type) {
         return $title;
     }
