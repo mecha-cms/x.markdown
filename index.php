@@ -1,10 +1,6 @@
 <?php namespace x\markdown;
 
 function page__content($content) {
-    if (false !== \strpos(',markdown,md,mkd,', ',' . ($this->_x() ?: P) . ',')) {
-        $content = \strtr(\From::markdown($content) ?? "", [' />' => '>']);
-        return "" !== $content ? $content : null;
-    }
     $type = $this->type();
     if ('Markdown' !== $type && 'text/markdown' !== $type) {
         return $content;
@@ -18,10 +14,6 @@ function page__description($description) {
 }
 
 function page__title($title) {
-    if (false !== \strpos(',markdown,md,mkd,', ',' . ($this->_x() ?: P) . ',')) {
-        $title = \strtr(\From::markdown($title, false) ?? "", [' />' => '>']);
-        return "" !== $title ? $title : null;
-    }
     $type = $this->type();
     if ('Markdown' !== $type && 'text/markdown' !== $type) {
         return $title;
@@ -30,6 +22,14 @@ function page__title($title) {
     return "" !== $title ? $title : null;
 }
 
+function page__type($type) {
+    if (false !== \strpos(',markdown,md,mkd,', ',' . ($this->_x() ?? P) . ',')) {
+        return 'Markdown';
+    }
+    return $type;
+}
+
 \Hook::set('page.content', __NAMESPACE__ . "\\page__content", 2);
 \Hook::set('page.description', __NAMESPACE__ . "\\page__description", 2);
 \Hook::set('page.title', __NAMESPACE__ . "\\page__title", 2);
+\Hook::set('page.type', __NAMESPACE__ . "\\page__type", 0);
