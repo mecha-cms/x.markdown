@@ -23,7 +23,7 @@ function page__title($title) {
 }
 
 function page__type($type) {
-    if (false !== \strpos(',markdown,md,mkd,', ',' . ($this->_x() ?? P) . ',')) {
+    if (false !== \strpos(',markdown,md,mkd,', ',' . ($this->_x() ?? \P) . ',')) {
         return 'Markdown';
     }
     return $type;
